@@ -1,0 +1,3 @@
+textual
+adafruit-blinka
+circuitpython-nrf24l01
