@@ -10,16 +10,17 @@
 #   gpiochip0 = banks A-I (288 lines)   offset = bank*32 + pin
 #   gpiochip1 = bank L     (32 lines)   offset = pin
 #   bank index: A=0 B=1 C=2 D=3 E=4 F=5 G=6 H=7 I=8
-#   so PI5 = chip0 line 261, PI6 = 262, PI11 = 267, PI12 = 268
+#   so PI11 = chip0 line 267, PI12 = 268
 #
-# Free pins on the Sharkdeck header: PI5, PI6, PI11, PI12
-# (PI7/PI8 are the NRF24L01; RX0/TX0 are the UART.)
+# Free pins on THIS board: PI11 (pin 10), PI12 (pin 12).
+# Lines 261-266 (PI5..PI10) are claimed by the kernel/overlay,
+# and PI7/PI8 drive the NRF24L01 - so they can't toggle an LED.
 #
 # Usage:
-#   python3 led_tool.py            # default pin PI5
-#   python3 led_tool.py PI6        # by pin name
-#   python3 led_tool.py 261        # by raw gpiochip0 offset
-#   python3 led_tool.py gpiochip0:261
+#   python3 led_tool.py            # default pin PI11
+#   python3 led_tool.py PI12       # by pin name
+#   python3 led_tool.py 267        # by raw gpiochip0 offset
+#   python3 led_tool.py gpiochip0:267
 # ==========================================================
 import sys
 import time
@@ -36,7 +37,7 @@ def c(text, colour):
     return f"{C.get(colour, '')}{text}{C['reset']}"
 
 
-DEFAULT_PIN = "PI5"
+DEFAULT_PIN = "PI11"
 
 
 def parse_pin(name):

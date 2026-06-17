@@ -81,11 +81,11 @@ This repo ships **two** front-ends over the same NRF24L01 logic — pick whichev
 Turn an LED on/off/blink on any GPIO pin (uses Blinka `board` + `digitalio`):
 
 ```bash
-python3 led_tool.py          # default pin PI5
-python3 led_tool.py PI6      # or name a specific pin
+python3 led_tool.py           # default pin PI11
+python3 led_tool.py PI12      # or name a specific pin
 ```
 
-**Free GPIO pins on the Sharkdeck header:** `PI5`, `PI6`, `PI11`, `PI12`. (`PI7`/`PI8` are used by the NRF24L01; `RX0`/`TX0` are the UART.)
+**Free GPIO pins on this board:** `PI11` (pin 10) and `PI12` (pin 12). On the WalnutPi, lines `PI5`–`PI10` and the radio pins `PI7`/`PI8` are already claimed by the kernel/device-tree overlay (`gpioinfo gpiochip0` shows them as `[used]`), so they can't drive an LED. `RX0`/`TX0` are the UART.
 
 **Wiring (active-high):** `GPIO pin → 220–330 Ω resistor → LED(+) anode`, and `LED(–) cathode → GND`. If you enter a pin name the board doesn't have, the tool prints the full list of valid pin names.
 
