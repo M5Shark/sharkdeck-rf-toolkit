@@ -85,12 +85,12 @@ class SharkdeckRFApp(App):
     }
     RichLog {
         background: #010409;
-        border: inset #30363d;
+        border: round #30363d;
         color: #7ee787;
     }
     Input {
         background: #21262d;
-        border: sunken #30363d;
+        border: round #30363d;
         color: #ffffff;
     }
     Input:focus {
@@ -109,6 +109,15 @@ class SharkdeckRFApp(App):
     }
     .stop-btn:focus {
         background: #f85149;
+    }
+    .row {
+        height: auto;
+        margin-bottom: 1;
+    }
+    .row Static {
+        width: auto;
+        content-align: left middle;
+        padding: 1 1 0 0;
     }
     """
 
@@ -145,9 +154,9 @@ class SharkdeckRFApp(App):
                 with Vertical(id="panel-tx", classes="module-card"):
                     yield Static("📡 PACKET TRANSMITTER MODULE", classes="title-banner")
                     yield Horizontal(
-                        Static("Payload Message: ", style="vertical-align: middle;"),
+                        Static("Payload Message: "),
                         Input(value="Sharkdeck Data Ping", id="tx-input"),
-                        height=3
+                        classes="row"
                     )
                     yield Button("🚀 Send Payload Sequence", id="btn-tx-start", classes="action-btn")
                     yield RichLog(id="tx-log")
@@ -162,14 +171,14 @@ class SharkdeckRFApp(App):
                 with Vertical(id="panel-jam", classes="module-card"):
                     yield Static("⚠️ RF SPECTRAL CONGESTION TESTBENCH", classes="warning-banner")
                     yield Horizontal(
-                        Static("Target Channel (0-125): ", style="vertical-align: middle;"),
+                        Static("Target Channel (0-125): "),
                         Input(value="76", id="jam-channel-input"),
-                        height=3
+                        classes="row"
                     )
                     yield Horizontal(
                         Button("⚡ START PACKET FLOOD", id="btn-jam-start", classes="action-btn"),
                         Button("🛑 STOP FLOOD", id="btn-jam-stop", classes="stop-btn"),
-                        height=3
+                        classes="row"
                     )
                     yield Static("\n📊 REAL-TIME EMISSION METRICS:")
                     self.lbl_jam_stats = Static("System Status: Idle / Standby")
@@ -230,8 +239,7 @@ class SharkdeckRFApp(App):
 
         logger.write(f"🔄 Initializing TX pipe for text: '{payload_text}'")
 
-        # Threaded worker wrapper ensures UI remains at full 60FPS while hitting hardware
-        @self.run_worker(thread=True, exclusive=True)
+        # Threaded worker wrapper ensures UI remains responsive while hitting hardware
         def tx_worker():
             radio.open_tx_pipe(ADDRESSES[0])
             radio.listen = False
@@ -245,6 +253,8 @@ class SharkdeckRFApp(App):
                 time.sleep(0.5)
             self.call_from_thread(logger.write, "🏁 Sequence Complete.")
 
+        self.run_worker(tx_worker, thread=True, group="tx_stream", exclusive=True)
+
     def run_receiver_stream(self) -> None:
         """Continuously streams raw airwaves packet data straight to UI box."""
         logger = self.query_one("#rx-log", RichLog)
@@ -254,7 +264,6 @@ class SharkdeckRFApp(App):
 
         logger.write("📡 Scanning airwaves for incoming nodes...")
 
-        @self.run_worker(thread=True, group="receiver_stream", exclusive=True)
         def rx_worker():
             radio.open_rx_pipe(1, ADDRESSES[0])
             radio.listen = True
@@ -270,6 +279,8 @@ class SharkdeckRFApp(App):
                         self.call_from_thread(logger.write, f"📥 Raw Bytes: {raw_data.hex()}")
                 time.sleep(0.05)
 
+        self.run_worker(rx_worker, thread=True, group="receiver_stream", exclusive=True)
+
     def run_jammer_flood(self) -> None:
         """Floods the spectrum bypassing ACK wait sequences for raw high-speed metrics."""
         if not RADIO_HARDWARE_AVAILABLE:
@@ -284,7 +295,6 @@ class SharkdeckRFApp(App):
 
         self.lbl_jam_stats.update(f"⚡ FLOOD ACTIVE ON FREQUENCY {2400 + radio.channel}MHz...")
 
-        @self.run_worker(thread=True, group="jammer_stream", exclusive=True)
         def jam_worker():
             radio.open_tx_pipe(ADDRESSES[0])
             radio.auto_ack = False  # Bypasses checking intervals to optimize processing speeds
@@ -311,6 +321,14 @@ class SharkdeckRFApp(App):
             # Clean exit reset rules
             radio.auto_ack = True
             radio.power = False
+
+        self.run_worker(jam_worker, thread=True, group="jammer_stream", exclusive=True)
+
+    def stop_worker_by_group(self, group: str) -> None:
+        """Cancel every running worker that belongs to the given group."""
+        for worker in list(self.workers):
+            if worker.group == group:
+                worker.cancel()
 
     def stop_jammer_flood(self) -> None:
         """Cancels background worker and gracefully releases airwave control."""
