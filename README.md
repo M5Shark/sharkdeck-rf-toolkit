@@ -74,6 +74,18 @@ This repo ships **two** front-ends over the same NRF24L01 logic — pick whichev
 | --- | --- | --- |
 | `sharkdeck_app.py` | Full-screen Textual TUI (cyberpunk UI, keyboard nav) | Modern terminal that captures key events |
 | `sharkdeck_cli.py` | Plain numbered menu (type a number + Enter) | Minimal/framebuffer consoles where the TUI can't grab the keyboard. **No `textual` needed.** |
+| `led_tool.py` | Plain menu GPIO LED control (on/off/blink) | Quick GPIO test — toggle an LED on any pin. |
+
+### GPIO LED tool
+
+Turn an LED on/off/blink on any GPIO pin (uses Blinka `board` + `digitalio`):
+
+```bash
+python3 led_tool.py          # default pin PI9
+python3 led_tool.py PC7      # or name a specific pin
+```
+
+**Wiring (active-high):** `GPIO pin → 220–330 Ω resistor → LED(+) anode`, and `LED(–) cathode → GND`. If you enter a pin name the board doesn't have, the tool prints the full list of valid pin names.
 
 Run the CLI version:
 
