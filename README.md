@@ -27,6 +27,22 @@ This project is published **for educational and authorized security-research pur
 
 ---
 
+## ⚡ Quick install (WalnutPi / Allwinner H616, Debian bookworm)
+
+On boards that aren't officially supported by Adafruit (e.g. the WalnutPi H616),
+Blinka needs the **libgpiod v1.6 Python bindings**, which aren't in the apt repos
+and must be compiled. The bundled installer does this for you — including the
+Debian `site-packages` → `dist-packages` path fix — and installs the Python deps:
+
+```bash
+cd ~/sharkdeck-rf-toolkit
+git pull
+bash install.sh
+```
+
+When it finishes it prints `gpiod OK` and `board OK`. Then run `python3 sharkdeck_app.py`.
+If you're on a fully supported board, the manual steps below also work.
+
 ## 🔧 Prerequisites
 
 Install the Textual UI library and the hardware drivers on your Sharkdeck:
