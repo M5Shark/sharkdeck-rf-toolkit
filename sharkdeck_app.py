@@ -123,10 +123,10 @@ class SharkdeckRFApp(App):
 
     # Global Key Bindings for Keyboard Navigation
     BINDINGS = [
-        ("t", "switch_mode('tx')", "Transmit Mode"),
-        ("r", "switch_mode('rx')", "Receive Mode"),
-        ("j", "switch_mode('jam')", "Jammer Test"),
-        ("q", "quit", "Exit System")
+        ("t,T", "switch_mode('tx')", "Transmit Mode"),
+        ("r,R", "switch_mode('rx')", "Receive Mode"),
+        ("j,J", "switch_mode('jam')", "Jammer Test"),
+        ("q,Q,ctrl+c", "quit", "Exit System"),
     ]
 
     # Reactive variables to automatically update TUI states refreshingly
