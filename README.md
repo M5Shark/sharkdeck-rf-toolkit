@@ -66,7 +66,24 @@ Adjust these in `sharkdeck_app.py` if your wiring differs.
 
 ---
 
-## 🚀 Run
+## 🖥️ Two interfaces
+
+This repo ships **two** front-ends over the same NRF24L01 logic — pick whichever your console handles best:
+
+| Script | Interface | When to use |
+| --- | --- | --- |
+| `sharkdeck_app.py` | Full-screen Textual TUI (cyberpunk UI, keyboard nav) | Modern terminal that captures key events |
+| `sharkdeck_cli.py` | Plain numbered menu (type a number + Enter) | Minimal/framebuffer consoles where the TUI can't grab the keyboard. **No `textual` needed.** |
+
+Run the CLI version:
+
+```bash
+python3 sharkdeck_cli.py
+```
+
+You'll get a menu — type `1` Transmit, `2` Receive, `3` Jammer, `4` Channel, `0` Quit, then Enter. Press `Ctrl+C` to stop receiving/flooding and return to the menu.
+
+## 🚀 Run (TUI)
 
 ```bash
 python3 sharkdeck_app.py
