@@ -10,9 +10,12 @@
 #     GPIO pin --> [220-330 ohm resistor] --> LED(+) anode
 #     LED(-) cathode --> GND
 #
+# Free GPIO pins on the Sharkdeck header: PI5, PI6, PI11, PI12
+# (PI7/PI8 are taken by the NRF24L01; RX0/TX0 are the UART.)
+#
 # Usage:
-#     python3 led_tool.py            # uses default pin PI9
-#     python3 led_tool.py PC7        # use a specific pin
+#     python3 led_tool.py            # uses default pin PI5
+#     python3 led_tool.py PI6        # use a specific pin
 # ==========================================================
 import sys
 import time
@@ -28,7 +31,9 @@ def c(text, colour):
     return f"{C.get(colour, '')}{text}{C['reset']}"
 
 
-DEFAULT_PIN = "PI9"
+# Free GPIO pins on the Sharkdeck header: PI5, PI6, PI11, PI12
+# (PI7/PI8 are used by the NRF24L01; RX0/TX0 are the UART.)
+DEFAULT_PIN = "PI5"
 
 
 def get_pin_name():
